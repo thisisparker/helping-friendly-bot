@@ -1,0 +1,12 @@
+# Helping Friendly Bot
+
+This repo hosts the spaghetti code powering the Helping Friendly Bot on various platforms. As of 2025-04-20, it posts replies to official Phish tweets on bsky with the handle [helpingfriendly.xor.blue](https://bsky.app/profile/helpingfriendly.xor.blue), and posts to the fediverse at [@helpingfriendlybot@shakedown.social](https://shakedown.social/@helpingfriendlybot/). It uses Signal (via `signal-cli`) to send personalized messages to "subscribers," but there is currently no mechanism to add subscribers.
+
+`hfbot.py` runs the data retrieval and processing stuff, and if it's all set up, its `helping_friendly` function can take a song title and optionally a phish.net username and produce a text description. It was originally built to blend caching and live data intelligently but has been hacked into pretty much only using cached data that I build after each show.
+
+The other Python files are three different approaches to pulling real-time show data. In chronological order:
+- `streamtweets.py` pulled from `@phish_ftr` tweets using Twitter's Streaming API. After the Elon acquisition that API become ludicrously expensive and so I stopped using it.
+- `getliveset.py` pulled from [`live.phish.net`](https://live.phish.net), which hosts realtime show updates for whatever show is happening or happened most recently, but has a handful of quirks I had to build around bit by bit. Using a setlist like this instead of a stream of events forced me to adopt more of a "show" model with some state about what has occurred. Also, because I was pulling instead of receiving events, the whole thing was a bit slower. (This is kind of what broke the realtime data fetching, because previously I was retrieving the song data _before_ it reflected the current performance, and now I was not.)
+- `streambsky.py` pulls from `@phish.com` posts on Bluesky using Jetstream. It still uses some of the existing "show" model, which allows it to process repeated songs differently, and could probably go back to using API calls instead of cached data, but only to the extent I'm comfortable racing Phish.net for each call.
+
+Note that one thing I was never able to get working successfully is live data from the Phish.net API. I don't remember exactly what I tried but I thought I'd be getting realtime data and it was cached for ~40 minutes, which is untenable for this use case! Hence the scraping, which I'd rather not do.
