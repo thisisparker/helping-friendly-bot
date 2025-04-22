@@ -38,6 +38,13 @@ with open('apikeys.yaml') as f:
     did_to_monitor = config['bsky-did']
 
 
+def send_signal_message(message, recipient):
+    command = (f'signal-cli -a {signal_sender} --trust-new-identities=always send -m')
+
+    split_command = command.split()
+    subprocess.run(split_command + [message] + [recipient],
+                    stdout=subprocess.DEVNULL)
+
 def send_alert(song, reply_to):
     check_date = datetime.strftime(datetime.today()-timedelta(hours=6), '%Y-%m-%d')
 
@@ -101,11 +108,7 @@ def send_alert(song, reply_to):
 
         print('---')
 
-        command = (f'signal-cli -a {signal_sender} --trust-new-identities=always send -m')
-
-        split_command = command.split()
-        subprocess.run(split_command + [output_string] + [sub['number']],
-                       stdout=subprocess.DEVNULL)
+        send_signal_message(output_string, sub['number'])
 
 def process_message(streamer, message):
     msg = json.loads(message)
