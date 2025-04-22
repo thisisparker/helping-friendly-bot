@@ -20,17 +20,29 @@ from mastodon import Mastodon
 import hfbot
 from subscribers import subscribers
 
-with open('apikeys.yaml') as f:
-    config = yaml.safe_load(f)
+script_path = os.path.abspath(__file__)
+os.chdir(os.path.dirname(script_path))
 
-    mastodon_client = Mastodon(access_token=config['mastodon-token'],
-           api_base_url=config['mastodon-server'])
+with open('apikeys.yaml') as f:
+    if '-d' in sys.argv[1:]:
+        config = yaml.safe_load(f)['dev']
+        print('loaded dev configuration')
+    else:
+        config = yaml.safe_load(f)['prod']
+        print('loaded prod configuration')
+
+    try:
+        mastodon_client = Mastodon(access_token=config['mastodon-token'],
+            api_base_url=config['mastodon-server'])
+    except:
+        print('could not log in to masotodon')
+        pass
 
     bsky_client = atproto.Client()
     try:
         bsky_client.login(config['bsky-username'], config['bsky-password'])
     except:
-        pass
+        sys.exit('could not log in to bsky')
 
     signal_sender = config['signal-number']
 

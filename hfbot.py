@@ -18,6 +18,9 @@ from tqdm import tqdm
 
 API_ROOT = 'https://api.phish.net/v5'
 
+script_path = os.path.abspath(__file__)
+os.chdir(os.path.dirname(script_path))
+
 with open('apikeys.yaml') as f:
     config = yaml.safe_load(f)
     apikey = config['api-key']
