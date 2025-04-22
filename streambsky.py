@@ -2,8 +2,7 @@
 
 import json
 import os
-import random
-import subprocess
+import requests
 import textwrap
 import re
 import sys
@@ -39,11 +38,13 @@ with open('apikeys.yaml') as f:
 
 
 def send_signal_message(message, recipient):
-    command = (f'signal-cli -a {signal_sender} --trust-new-identities=always send -m')
+    SIGNAL_API_URL = '127.0.0.1:8080' #todo: get this an an env variable or something
 
-    split_command = command.split()
-    subprocess.run(split_command + [message] + [recipient],
-                    stdout=subprocess.DEVNULL)
+    packaged_message = {'message': message,
+                        'number': signal_sender,
+                        'recipients': [recipient]}
+
+    requests.post(f'http://{SIGNAL_API_URL}/v2/send', json=packaged_message)
 
 def send_alert(song, reply_to):
     check_date = datetime.strftime(datetime.today()-timedelta(hours=6), '%Y-%m-%d')
