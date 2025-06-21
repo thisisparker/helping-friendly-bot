@@ -100,6 +100,11 @@ def send_alert(song, reply_to):
         post_rkey = post_rec.uri.split('/')[-1]
         post_cid  = post_rec.cid
 
+        try:
+            bsky_client.repost(post_rec.uri, post_rec.cid)
+        except Exception as e:
+            print('Error:', e)
+
     set_so_far.append({'title':title, 'rkey':post_rkey, 'cid': post_cid})
 
     with open(f'setlists/{check_date}.json', 'w') as f:
