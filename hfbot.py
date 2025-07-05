@@ -31,6 +31,9 @@ def update_songs_list():
     song_dict = {s['song']: s['slug'] for s in songs}
     song_dict.update({s['abbr']: s['slug'] for s in songs if s['abbr']})
 
+    # it's never timber
+    song_dict['Timber'] = 'timber-jerry-the-mule'
+
     with open('slugs.json', 'w') as f:
         json.dump(song_dict, f, indent=4)
 
